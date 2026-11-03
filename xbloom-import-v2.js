@@ -1,0 +1,1 @@
+(()=>{const a=document.createElement('script');a.src='https://fox3dprint.github.io/coffeescreen-connect/forge.min.js';a.onload=()=>{const b=document.createElement('script');b.src='https://fox3dprint.github.io/coffeescreen-connect/xbloom-import.js';document.head.append(b)};document.head.append(a)})();
