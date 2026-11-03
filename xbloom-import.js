@@ -34,7 +34,7 @@ async function login(){
  body.querySelector('#xbLogin').onclick=async()=>{
   const email=body.querySelector('#xbEmail').value.trim(),password=body.querySelector('#xbPassword').value;if(!email||!password){say('أدخل البريد وكلمة المرور');return;}
   try{say('جار تسجيل الدخول…');const result=await call('tMemberLogin.thtml',{interfaceVersion:20240918,skey:'testskey',phoneType:'Android',clientType:2,languageType:1,email,password,jpushId:''});
-   password='';body.querySelector('#xbPassword').value='';await list(result.member.tableId,result.token);
+   body.querySelector('#xbPassword').value='';await list(result.member.tableId,result.token);
   }catch(e){say(e.message||'تعذر تسجيل الدخول');}
  };
 }
