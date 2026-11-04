@@ -15,6 +15,13 @@ const msg=host.querySelector('#xbMsg'), body=host.querySelector('#xbBody');
 const say=t=>msg.textContent=t;
 const escape=s=>String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 let key;
+function loginMessage(error){
+ const text=String(error&&error.message||'').toLowerCase();
+ if(/password|passwd|credential|email|login|account|member|user.?name|邮箱|密码|用户名/.test(text)) return 'البريد الإلكتروني أو كلمة المرور غير صحيحة. تأكد منهما ثم حاول مجددًا.';
+ if(/401|403|unauthor|forbidden/.test(text)) return 'تعذر تسجيل الدخول. تأكد من البريد وكلمة المرور ثم حاول مجددًا.';
+ if(/network|failed to fetch|load|timeout|timed out|اتصال/.test(text)) return 'تعذر الوصول إلى خدمة xBloom. تأكد أن الجوال متصل بالإنترنت ثم حاول مجددًا.';
+ return 'تعذر تسجيل الدخول إلى حساب xBloom. راجع البيانات ثم حاول مجددًا.';
+}
 function loadForge(){return new Promise((resolve,reject)=>{
  if(window.forge) return resolve(window.forge);
  const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/node-forge@1.3.1/dist/forge.min.js';s.onload=()=>resolve(window.forge);s.onerror=()=>reject(new Error('تعذر تحميل أداة التشفير؛ تحقق من الإنترنت'));document.head.append(s);
@@ -33,9 +40,10 @@ async function login(){
  body.innerHTML=`<label>البريد<input id=xbEmail type=email autocomplete=username required></label><label>كلمة المرور<input id=xbPassword type=password autocomplete=current-password required></label><button id=xbLogin>عرض الوصفات</button>`;
  body.querySelector('#xbLogin').onclick=async()=>{
   const email=body.querySelector('#xbEmail').value.trim(),password=body.querySelector('#xbPassword').value;if(!email||!password){say('أدخل البريد وكلمة المرور');return;}
+  const loginButton=body.querySelector('#xbLogin');loginButton.disabled=true;
   try{say('جار تسجيل الدخول…');const result=await call('tMemberLogin.thtml',{interfaceVersion:20240918,skey:'testskey',phoneType:'Android',clientType:2,languageType:1,email,password,jpushId:''});
    body.querySelector('#xbPassword').value='';await list(result.member.tableId,result.token);
-  }catch(e){say(e.message||'تعذر تسجيل الدخول');}
+  }catch(e){say(loginMessage(e));body.querySelector('#xbPassword').value='';loginButton.disabled=false;}
  };
 }
 async function list(memberId,session){
