@@ -17,9 +17,12 @@ const escape=s=>String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 let key;
 function loginMessage(error){
  const text=String(error&&error.message||'').toLowerCase();
- if(/password|passwd|credential|email|login|account|member|user.?name|邮箱|密码|用户名/.test(text)) return 'البريد الإلكتروني أو كلمة المرور غير صحيحة. تأكد منهما ثم حاول مجددًا.';
- if(/401|403|unauthor|forbidden/.test(text)) return 'تعذر تسجيل الدخول. تأكد من البريد وكلمة المرور ثم حاول مجددًا.';
- if(/network|failed to fetch|load|timeout|timed out|اتصال/.test(text)) return 'تعذر الوصول إلى خدمة xBloom. تأكد أن الجوال متصل بالإنترنت ثم حاول مجددًا.';
+ if(/password|passwd|credential|email|login|account|member|user.?name|邮箱|密码|用户名/.test(text))
+  return 'البريد الإلكتروني أو كلمة المرور غير صحيحة. تأكد منهما ثم حاول مجددًا.';
+ if(/401|403|unauthor|forbidden/.test(text))
+  return 'تعذر تسجيل الدخول. تأكد من البريد وكلمة المرور ثم حاول مجددًا.';
+ if(/network|failed to fetch|load|timeout|timed out|اتصال/.test(text))
+  return 'تعذر الوصول إلى خدمة xBloom. تأكد أن الجوال متصل بالإنترنت ثم حاول مجددًا.';
  return 'تعذر تسجيل الدخول إلى حساب xBloom. راجع البيانات ثم حاول مجددًا.';
 }
 function loadForge(){return new Promise((resolve,reject)=>{
@@ -55,7 +58,7 @@ async function list(memberId,session){
  }catch(e){say(e.message||'تعذر قراءة الوصفات');}
 }
 async function transfer(recipes){
- let done=0;for(const recipe of recipes){say(`جار نقل ${done+1} من ${recipes.length}: ${recipe.theName}`);try{const r=await fetch('/import?token='+encodeURIComponent(token),{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'url='+encodeURIComponent(recipe.shareRecipeLink)});if(!r.ok) throw new Error('HTTP '+r.status);done++;}catch(e){say(`توقف النقل عند «${recipe.theName}». تم نقل ${done} وصفات.`);return;}}
+ let done=0;for(const recipe of recipes){say(`جار نقل ${done+1} من ${recipes.length}: ${recipe.theName}`);try{const r=await fetch('/import?token='+encodeURIComponent(token),{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'url='+encodeURIComponent(recipe.shareRecipeLink)});const detail=(await r.text()).trim();if(!r.ok) throw new Error(detail||('HTTP '+r.status));done++;}catch(e){say(`توقف النقل عند «${recipe.theName}». تم نقل ${done} وصفات. السبب: ${e.message||'انقطع الاتصال بالشاشة'}`);return;}}
  say(`تم نقل ${done} وصفات إلى الشاشة. لم يبدأ أي تحضير.`);
 }
 host.querySelector('#xbStart').onclick=async()=>{try{say('جار تجهيز اتصال آمن…');await loadForge();key=window.forge.pki.publicKeyFromPem(PUBLIC_KEY);login();}catch(e){say(e.message||'تعذر تجهيز الاتصال');}};
