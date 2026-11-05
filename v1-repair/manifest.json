@@ -1,0 +1,14 @@
+{
+  "name": "CoffeeScreen FOX — إصلاح شاشة ون 2.0.16",
+  "version": "2.0.16",
+  "new_install_prompt_erase": false,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        {"path": "firmware/boot_app0.bin", "offset": 57344},
+        {"path": "firmware/CoffeeScreen-V1-2.0.16.bin", "offset": 65536}
+      ]
+    }
+  ]
+}
